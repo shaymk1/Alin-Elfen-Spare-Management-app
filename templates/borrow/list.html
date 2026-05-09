@@ -1,0 +1,111 @@
+{% extends "base.html" %} {% block title %}Borrow Items - Spare Manager{%
+endblock %} {% block content %}
+<div class="card">
+	<div class="card-header flex-between">
+		<h1>Borrow Records</h1>
+		{% if current_user.role in ['store_manager', 'general_manager'] %}
+		<a
+			href="{{ url_for('borrow.borrow_item') }}"
+			class="btn"
+			>+ New Borrow</a
+		>
+		{% endif %}
+	</div>
+
+	<div class="card-body">
+		<div
+			class="mb-3 flex-gap-2"
+			style="display: flex; gap: 1rem; margin-bottom: 1rem">
+			<a
+				href="{{ url_for('borrow.list_borrows', status='active') }}"
+				class="btn {% if status == 'active' %}{% else %}btn-secondary{% endif %}"
+				>Active</a
+			>
+			<a
+				href="{{ url_for('borrow.list_borrows', status='returned') }}"
+				class="btn {% if status == 'returned' %}{% else %}btn-secondary{% endif %}"
+				>Returned</a
+			>
+			<a
+				href="{{ url_for('borrow.list_borrows', status='') }}"
+				class="btn btn-secondary"
+				>All</a
+			>
+		</div>
+
+		{% if borrows.items %}
+		<table>
+			<thead>
+				<tr>
+					<th>Spare Name</th>
+					<th>Quantity</th>
+					<th>Borrowed By</th>
+					<th>Borrowed Date</th>
+					<th>Expected Return</th>
+					<th>Status</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for borrow in borrows.items %}
+				<tr>
+					<td>{{ borrow.spare.name }}</td>
+					<td>{{ borrow.quantity }} {{ borrow.spare.unit or 'pcs' }}</td>
+					<td>{{ borrow.borrowed_by.username }}</td>
+					<td>{{ borrow.borrowed_at.strftime('%Y-%m-%d %H:%M') }}</td>
+					<td>
+						{% if borrow.expected_return_date %} {{
+						borrow.expected_return_date.strftime('%Y-%m-%d') }} {% else %} - {%
+						endif %}
+					</td>
+					<td>
+						{% if borrow.is_returned %}
+						<span class="badge badge-success">Returned</span>
+						{% else %}
+						<span class="badge badge-accent">Active</span>
+						{% endif %}
+					</td>
+					<td>
+						{% if not borrow.is_returned and current_user.role in
+						['store_manager', 'general_manager'] %}
+						<a
+							href="{{ url_for('return.return_item') }}"
+							class="btn"
+							style="padding: 0.5rem 1rem; font-size: 0.9rem"
+							>Return</a
+						>
+						{% endif %}
+					</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+
+		{% if borrows.pages > 1 %}
+		<div class="pagination">
+			{% if borrows.has_prev %}
+			<a
+				href="{{ url_for('borrow.list_borrows', page=borrows.prev_num, status=status) }}"
+				>← Previous</a
+			>
+			{% endif %} {% for page_num in borrows.iter_pages() %} {% if page_num %}
+			{% if page_num == borrows.page %}
+			<span class="active">{{ page_num }}</span>
+			{% else %}
+			<a
+				href="{{ url_for('borrow.list_borrows', page=page_num, status=status) }}"
+				>{{ page_num }}</a
+			>
+			{% endif %} {% endif %} {% endfor %} {% if borrows.has_next %}
+			<a
+				href="{{ url_for('borrow.list_borrows', page=borrows.next_num, status=status) }}"
+				>Next →</a
+			>
+			{% endif %}
+		</div>
+		{% endif %} {% else %}
+		<p class="text-center text-muted p-4">No borrow records found.</p>
+		{% endif %}
+	</div>
+</div>
+{% endblock %}

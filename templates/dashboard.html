@@ -1,0 +1,82 @@
+{% extends "base.html" %} {% block title %}Dashboard - Spare Manager{% endblock
+%} {% block content %}
+<div class="card">
+	<div class="card-header">
+		<h1>Dashboard</h1>
+		<p class="text-muted">Welcome back, {{ current_user.username }}!</p>
+	</div>
+	<div class="card-body">
+		<div class="grid-4">
+			<div class="stat-card">
+				<div class="value">{{ stats.total_spares }}</div>
+				<div class="label">Total Spares</div>
+			</div>
+			<div class="stat-card">
+				<div
+					class="value"
+					style="color: var(--warning)">
+					{{ stats.low_stock }}
+				</div>
+				<div class="label">Low Stock Items</div>
+			</div>
+			<div class="stat-card">
+				<div
+					class="value"
+					style="color: var(--success)">
+					{{ stats.active_borrows }}
+				</div>
+				<div class="label">Active Borrows</div>
+			</div>
+			<div class="stat-card">
+				<div class="value">
+					{{ current_user.role.replace('_', ' ').title() }}
+				</div>
+				<div class="label">Your Role</div>
+			</div>
+		</div>
+
+		<div class="grid-2 mt-4">
+			<div class="card">
+				<div class="card-header">
+					<h3>Quick Actions</h3>
+				</div>
+				<div class="card-body">
+					<a
+						href="{{ url_for('spares.list_spares') }}"
+						class="btn"
+						style="width: 100%; margin-bottom: 0.5rem"
+						>View Spares</a
+					>
+					<a
+						href="{{ url_for('borrow.list_borrows') }}"
+						class="btn btn-secondary"
+						style="width: 100%; margin-bottom: 0.5rem"
+						>View Borrows</a
+					>
+					<a
+						href="{{ url_for('return.list_returns') }}"
+						class="btn btn-secondary"
+						style="width: 100%"
+						>View Returns</a
+					>
+				</div>
+			</div>
+
+			<div class="card">
+				<div class="card-header">
+					<h3>System Info</h3>
+				</div>
+				<div class="card-body text-muted">
+					<p><strong>Application:</strong> Spare Manager v1.0</p>
+					<p><strong>Mode:</strong> Offline Mode</p>
+					<p><strong>Database:</strong> SQLite</p>
+					<p>
+						<strong>Status:</strong>
+						<span class="badge badge-success">Operational</span>
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

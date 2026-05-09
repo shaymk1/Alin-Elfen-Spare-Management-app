@@ -1,0 +1,129 @@
+{% extends "base.html" %} {% block title %}Inventory Report - Spare Manager{%
+endblock %} {% block content %}
+<div class="card">
+	<div class="card-header">
+		<h1>Inventory Report</h1>
+		<p class="text-muted">Current inventory status and stock levels</p>
+	</div>
+
+	<div class="card-body">
+		{% if low_stock %}
+		<div class="alert alert-warning">
+			<strong
+				>⚠️ {{ low_stock|length }} item(s) below minimum stock level!</strong
+			>
+		</div>
+
+		<h3 style="margin-top: 2rem; margin-bottom: 1rem">Low Stock Items</h3>
+		<table>
+			<thead>
+				<tr>
+					<th>Spare Name</th>
+					<th>Part Number</th>
+					<th>Current Stock</th>
+					<th>Minimum Level</th>
+					<th>Unit</th>
+					<th>Location</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for spare in low_stock %}
+				<tr style="background-color: rgba(245, 158, 11, 0.1)">
+					<td><strong>{{ spare.name }}</strong></td>
+					<td><code>{{ spare.part_number or '-' }}</code></td>
+					<td>
+						<strong style="color: var(--warning)"
+							>{{ spare.quantity_in_stock }}</strong
+						>
+					</td>
+					<td>{{ spare.minimum_quantity }}</td>
+					<td>{{ spare.unit or 'pcs' }}</td>
+					<td>{{ spare.location or '-' }}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		{% endif %}
+
+		<h3 style="margin-top: 2rem; margin-bottom: 1rem">All Items</h3>
+		{% if spares %}
+		<table>
+			<thead>
+				<tr>
+					<th>Spare Name</th>
+					<th>Part Number</th>
+					<th>Type</th>
+					<th>In Stock</th>
+					<th>Min Level</th>
+					<th>Unit</th>
+					<th>Location</th>
+					<th>Status</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for spare in spares %}
+				<tr>
+					<td>{{ spare.name }}</td>
+					<td><code>{{ spare.part_number or '-' }}</code></td>
+					<td>
+						<span
+							class="badge {% if spare.item_type == 'reusable' %}badge-accent{% else %}badge-success{% endif %}">
+							{{ spare.item_type.title() }}
+						</span>
+					</td>
+					<td><strong>{{ spare.quantity_in_stock }}</strong></td>
+					<td>{{ spare.minimum_quantity }}</td>
+					<td>{{ spare.unit or 'pcs' }}</td>
+					<td>{{ spare.location or '-' }}</td>
+					<td>
+						{% if spare.quantity_in_stock <= spare.minimum_quantity %}
+						<span class="badge badge-warning">Low Stock</span>
+						{% elif spare.quantity_in_stock == 0 %}
+						<span class="badge badge-error">Out of Stock</span>
+						{% else %}
+						<span class="badge badge-success">OK</span>
+						{% endif %}
+					</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+
+		<div
+			class="mt-4"
+			style="
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+				gap: 1rem;
+			">
+			<div class="stat-card">
+				<div class="value">{{ spares|length }}</div>
+				<div class="label">Total Items</div>
+			</div>
+			<div class="stat-card">
+				<div class="value">{{ spares|sum(attribute='quantity_in_stock') }}</div>
+				<div class="label">Total Units in Stock</div>
+			</div>
+			<div class="stat-card">
+				<div
+					class="value"
+					style="color: var(--warning)">
+					{{ low_stock|length }}
+				</div>
+				<div class="label">Low Stock Items</div>
+			</div>
+			<div class="stat-card">
+				<div
+					class="value"
+					style="color: var(--error)">
+					{{ spares|selectattr('quantity_in_stock', 'equalto', 0)|list|length }}
+				</div>
+				<div class="label">Out of Stock</div>
+			</div>
+		</div>
+		{% else %}
+		<p class="text-center text-muted p-4">No items in inventory.</p>
+		{% endif %}
+	</div>
+</div>
+{% endblock %}

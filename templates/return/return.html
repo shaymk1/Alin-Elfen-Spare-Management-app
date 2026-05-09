@@ -1,0 +1,121 @@
+{% extends "base.html" %} {% block title %}Return Item - Spare Manager{%
+endblock %} {% block content %}
+<div
+	class="card"
+	style="max-width: 600px; margin: 0 auto">
+	<div class="card-header">
+		<h1>Return an Item</h1>
+	</div>
+
+	<div class="card-body">
+		{% if borrows %}
+		<form method="POST">
+			<div class="form-group">
+				<label for="borrow_id">Select Borrow Record *</label>
+				<select
+					id="borrow_id"
+					name="borrow_id"
+					required
+					onchange="updateBorrowInfo()">
+					<option value="">-- Choose a borrow --</option>
+					{% for borrow in borrows %}
+					<option
+						value="{{ borrow.id }}"
+						data-qty="{{ borrow.quantity }}"
+						data-spare="{{ borrow.spare.name }}"
+						data-borrower="{{ borrow.borrowed_by.username }}">
+						{{ borrow.spare.name }} - {{ borrow.quantity }} {{ borrow.spare.unit
+						or 'pcs' }} ({{ borrow.borrowed_by.username }})
+					</option>
+					{% endfor %}
+				</select>
+			</div>
+
+			<div
+				id="borrow-info"
+				class="alert alert-info"
+				style="display: none; margin-bottom: 1rem">
+				<p><strong>Spare:</strong> <span id="info-spare">-</span></p>
+				<p><strong>Borrowed By:</strong> <span id="info-borrower">-</span></p>
+				<p><strong>Original Quantity:</strong> <span id="info-qty">0</span></p>
+			</div>
+
+			<div class="form-group">
+				<label for="quantity_returned">Quantity Returned *</label>
+				<input
+					type="number"
+					id="quantity_returned"
+					name="quantity_returned"
+					value="1"
+					required
+					min="1"
+					max="100" />
+				<small
+					class="text-muted"
+					style="display: block; margin-top: 0.5rem"
+					>Enter the amount you are returning (can be less than borrowed)</small
+				>
+			</div>
+
+			<div class="form-group">
+				<label for="condition">Item Condition</label>
+				<select
+					id="condition"
+					name="condition">
+					<option value="">Not specified</option>
+					<option value="good">Good</option>
+					<option value="minor_damage">Minor Damage</option>
+					<option value="damaged">Damaged</option>
+					<option value="unusable">Unusable</option>
+				</select>
+			</div>
+
+			<div class="form-group">
+				<label for="notes">Return Notes</label>
+				<textarea
+					id="notes"
+					name="notes"
+					placeholder="Any observations about the returned item?"></textarea>
+			</div>
+
+			<div class="btn-group">
+				<button
+					type="submit"
+					class="btn">
+					Return Item
+				</button>
+				<a
+					href="{{ url_for('return.list_returns') }}"
+					class="btn btn-secondary"
+					>Cancel</a
+				>
+			</div>
+		</form>
+		{% else %}
+		<p class="text-center text-muted p-4">No active borrows to return.</p>
+		{% endif %}
+	</div>
+</div>
+
+<script>
+	function updateBorrowInfo() {
+		const select = document.getElementById('borrow_id');
+		const option = select.options[select.selectedIndex];
+		const infoDiv = document.getElementById('borrow-info');
+
+		if (option.value) {
+			const qty = option.getAttribute('data-qty');
+			const spare = option.getAttribute('data-spare');
+			const borrower = option.getAttribute('data-borrower');
+
+			document.getElementById('info-spare').textContent = spare;
+			document.getElementById('info-borrower').textContent = borrower;
+			document.getElementById('info-qty').textContent = qty;
+			document.getElementById('quantity_returned').max = qty;
+			infoDiv.style.display = 'block';
+		} else {
+			infoDiv.style.display = 'none';
+		}
+	}
+</script>
+{% endblock %}

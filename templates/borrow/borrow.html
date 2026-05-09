@@ -1,0 +1,107 @@
+{% extends "base.html" %} {% block title %}Borrow Item - Spare Manager{%
+endblock %} {% block content %}
+<div
+	class="card"
+	style="max-width: 600px; margin: 0 auto">
+	<div class="card-header">
+		<h1>Borrow an Item</h1>
+	</div>
+
+	<div class="card-body">
+		{% if spares %}
+		<form method="POST">
+			<div class="form-group">
+				<label for="spare_id">Select Spare *</label>
+				<select
+					id="spare_id"
+					name="spare_id"
+					required
+					onchange="updateStockInfo()">
+					<option value="">-- Choose a spare --</option>
+					{% for spare in spares %}
+					<option
+						value="{{ spare.id }}"
+						data-stock="{{ spare.quantity_in_stock }}"
+						data-unit="{{ spare.unit or 'pcs' }}">
+						{{ spare.name }} ({{ spare.quantity_in_stock }} available)
+					</option>
+					{% endfor %}
+				</select>
+			</div>
+
+			<div
+				id="stock-info"
+				class="alert alert-info"
+				style="display: none; margin-bottom: 1rem">
+				Stock: <span id="available-stock">0</span>
+				<span id="stock-unit">pcs</span>
+			</div>
+
+			<div class="form-group">
+				<label for="quantity">Quantity to Borrow *</label>
+				<input
+					type="number"
+					id="quantity"
+					name="quantity"
+					value="1"
+					required
+					min="1"
+					max="100" />
+			</div>
+
+			<div class="form-group">
+				<label for="purpose">Purpose</label>
+				<textarea
+					id="purpose"
+					name="purpose"
+					placeholder="What will this item be used for?"></textarea>
+			</div>
+
+			<div class="form-group">
+				<label for="expected_return_date">Expected Return Date</label>
+				<input
+					type="date"
+					id="expected_return_date"
+					name="expected_return_date" />
+			</div>
+
+			<div class="btn-group">
+				<button
+					type="submit"
+					class="btn">
+					Borrow Item
+				</button>
+				<a
+					href="{{ url_for('borrow.list_borrows') }}"
+					class="btn btn-secondary"
+					>Cancel</a
+				>
+			</div>
+		</form>
+		{% else %}
+		<p class="text-center text-muted p-4">No items available to borrow.</p>
+		{% endif %}
+	</div>
+</div>
+
+<script>
+	function updateStockInfo() {
+		const select = document.getElementById('spare_id');
+		const option = select.options[select.selectedIndex];
+		const infoDiv = document.getElementById('stock-info');
+		const stockSpan = document.getElementById('available-stock');
+		const unitSpan = document.getElementById('stock-unit');
+
+		if (option.value) {
+			const stock = option.getAttribute('data-stock');
+			const unit = option.getAttribute('data-unit');
+			stockSpan.textContent = stock;
+			unitSpan.textContent = unit;
+			infoDiv.style.display = 'block';
+			document.getElementById('quantity').max = stock;
+		} else {
+			infoDiv.style.display = 'none';
+		}
+	}
+</script>
+{% endblock %}

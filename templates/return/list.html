@@ -1,0 +1,74 @@
+{% extends "base.html" %} {% block title %}Return Items - Spare Manager{%
+endblock %} {% block content %}
+<div class="card">
+	<div class="card-header flex-between">
+		<h1>Return Records</h1>
+		{% if current_user.role in ['store_manager', 'general_manager'] %}
+		<a
+			href="{{ url_for('return.return_item') }}"
+			class="btn"
+			>+ New Return</a
+		>
+		{% endif %}
+	</div>
+
+	<div class="card-body">
+		{% if returns.items %}
+		<table>
+			<thead>
+				<tr>
+					<th>Spare Name</th>
+					<th>Quantity Returned</th>
+					<th>Condition</th>
+					<th>Returned By</th>
+					<th>Return Date</th>
+					<th>Notes</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for ret in returns.items %}
+				<tr>
+					<td>{{ ret.borrow_record.spare.name }}</td>
+					<td>
+						{{ ret.quantity_returned }} {{ ret.borrow_record.spare.unit or 'pcs'
+						}}
+					</td>
+					<td>
+						<span
+							class="badge {% if ret.condition == 'good' %}badge-success{% elif ret.condition == 'damaged' %}badge-warning{% else %}badge-accent{% endif %}">
+							{{ ret.condition or 'Not specified' }}
+						</span>
+					</td>
+					<td>{{ ret.returned_by.username }}</td>
+					<td>{{ ret.returned_at.strftime('%Y-%m-%d %H:%M') }}</td>
+					<td>{{ ret.notes or '-' }}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+
+		{% if returns.pages > 1 %}
+		<div class="pagination">
+			{% if returns.has_prev %}
+			<a href="{{ url_for('return.list_returns', page=returns.prev_num) }}"
+				>← Previous</a
+			>
+			{% endif %} {% for page_num in returns.iter_pages() %} {% if page_num %}
+			{% if page_num == returns.page %}
+			<span class="active">{{ page_num }}</span>
+			{% else %}
+			<a href="{{ url_for('return.list_returns', page=page_num) }}"
+				>{{ page_num }}</a
+			>
+			{% endif %} {% endif %} {% endfor %} {% if returns.has_next %}
+			<a href="{{ url_for('return.list_returns', page=returns.next_num) }}"
+				>Next →</a
+			>
+			{% endif %}
+		</div>
+		{% endif %} {% else %}
+		<p class="text-center text-muted p-4">No returns recorded yet.</p>
+		{% endif %}
+	</div>
+</div>
+{% endblock %}

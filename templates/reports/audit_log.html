@@ -1,0 +1,151 @@
+{% extends "base.html" %} {% block title %}Audit Log - Spare Manager{% endblock
+%} {% block content %}
+<div class="card">
+	<div class="card-header">
+		<h1>Audit Log</h1>
+		<p class="text-muted">
+			Immutable record of all system actions for compliance
+		</p>
+	</div>
+
+	<div class="card-body">
+		<form
+			method="GET"
+			class="mb-3">
+			<div
+				class="flex-gap-2"
+				style="display: flex; margin-bottom: 1rem">
+				<select name="entity_type">
+					<option value="">All Entity Types</option>
+					<option
+						value="spare"
+						{%
+						if
+						entity_type=""
+						="spare"
+						%}selected{%
+						endif
+						%}>
+						Spares
+					</option>
+					<option
+						value="user"
+						{%
+						if
+						entity_type=""
+						="user"
+						%}selected{%
+						endif
+						%}>
+						Users
+					</option>
+					<option
+						value="borrow_record"
+						{%
+						if
+						entity_type=""
+						="borrow_record"
+						%}selected{%
+						endif
+						%}>
+						Borrows
+					</option>
+					<option
+						value="return_record"
+						{%
+						if
+						entity_type=""
+						="return_record"
+						%}selected{%
+						endif
+						%}>
+						Returns
+					</option>
+				</select>
+				<button
+					type="submit"
+					class="btn">
+					Filter
+				</button>
+			</div>
+		</form>
+
+		{% if logs.items %}
+		<div style="overflow-x: auto">
+			<table>
+				<thead>
+					<tr>
+						<th>Timestamp</th>
+						<th>Action</th>
+						<th>Entity Type</th>
+						<th>Entity ID</th>
+						<th>Performed By</th>
+						<th>IP Address</th>
+						<th>Changes</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for log in logs.items %}
+					<tr>
+						<td>{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+						<td>
+							<span class="badge badge-accent">{{ log.action.upper() }}</span>
+						</td>
+						<td>{{ log.entity_type }}</td>
+						<td><code>{{ log.entity_id or '-' }}</code></td>
+						<td>
+							{{ log.performed_by.username if log.performed_by else 'System' }}
+						</td>
+						<td><code>{{ log.ip_address or '-' }}</code></td>
+						<td>
+							{% if log.changes %}
+							<details style="cursor: pointer">
+								<summary>View</summary>
+								<pre
+									style="
+										background-color: var(--bg-tertiary);
+										padding: 0.75rem;
+										border-radius: 4px;
+										font-size: 0.85rem;
+										overflow-x: auto;
+										margin-top: 0.5rem;
+									">
+{{ log.changes }}</pre
+								>
+							</details>
+							{% else %} - {% endif %}
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+
+		{% if logs.pages > 1 %}
+		<div class="pagination">
+			{% if logs.has_prev %}
+			<a
+				href="{{ url_for('reports.audit_log_view', page=logs.prev_num, entity_type=entity_type) }}"
+				>← Previous</a
+			>
+			{% endif %} {% for page_num in logs.iter_pages() %} {% if page_num %} {%
+			if page_num == logs.page %}
+			<span class="active">{{ page_num }}</span>
+			{% else %}
+			<a
+				href="{{ url_for('reports.audit_log_view', page=page_num, entity_type=entity_type) }}"
+				>{{ page_num }}</a
+			>
+			{% endif %} {% endif %} {% endfor %} {% if logs.has_next %}
+			<a
+				href="{{ url_for('reports.audit_log_view', page=logs.next_num, entity_type=entity_type) }}"
+				>Next →</a
+			>
+			{% endif %}
+		</div>
+		{% endif %} {% else %}
+		<p class="text-center text-muted p-4">No audit log entries found.</p>
+		{% endif %}
+	</div>
+</div>
+{% endblock %}

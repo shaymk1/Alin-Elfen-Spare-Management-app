@@ -1,0 +1,132 @@
+{% extends "base.html" %} {% block title %}Edit Spare - Spare Manager{% endblock
+%} {% block content %}
+<div
+	class="card"
+	style="max-width: 600px; margin: 0 auto">
+	<div class="card-header">
+		<h1>Edit Spare: {{ spare.name }}</h1>
+	</div>
+
+	<div class="card-body">
+		<form method="POST">
+			<div class="form-group">
+				<label for="name">Spare Name *</label>
+				<input
+					type="text"
+					id="name"
+					name="name"
+					value="{{ spare.name }}"
+					required />
+			</div>
+
+			<div class="form-group">
+				<label for="description">Description</label>
+				<textarea
+					id="description"
+					name="description">
+{{ spare.description or '' }}</textarea
+				>
+			</div>
+
+			<div class="form-group">
+				<label for="part_number">Part Number</label>
+				<input
+					type="text"
+					id="part_number"
+					name="part_number"
+					value="{{ spare.part_number or '' }}" />
+			</div>
+
+			<div class="form-group">
+				<label for="item_type">Item Type *</label>
+				<select
+					id="item_type"
+					name="item_type"
+					required>
+					<option
+						value="reusable"
+						{%
+						if
+						spare.item_type=""
+						="reusable"
+						%}selected{%
+						endif
+						%}>
+						Reusable (Must be returned)
+					</option>
+					<option
+						value="consumable"
+						{%
+						if
+						spare.item_type=""
+						="consumable"
+						%}selected{%
+						endif
+						%}>
+						Consumable (May be returned)
+					</option>
+				</select>
+			</div>
+
+			<div class="grid-2">
+				<div class="form-group">
+					<label for="quantity_in_stock">Current Quantity *</label>
+					<input
+						type="number"
+						id="quantity_in_stock"
+						name="quantity_in_stock"
+						value="{{ spare.quantity_in_stock }}"
+						required
+						min="0" />
+				</div>
+
+				<div class="form-group">
+					<label for="minimum_quantity">Minimum Level *</label>
+					<input
+						type="number"
+						id="minimum_quantity"
+						name="minimum_quantity"
+						value="{{ spare.minimum_quantity }}"
+						required
+						min="1" />
+				</div>
+			</div>
+
+			<div class="grid-2">
+				<div class="form-group">
+					<label for="unit">Unit (pcs, box, set, etc.)</label>
+					<input
+						type="text"
+						id="unit"
+						name="unit"
+						value="{{ spare.unit or '' }}"
+						placeholder="e.g., pcs" />
+				</div>
+
+				<div class="form-group">
+					<label for="location">Storage Location</label>
+					<input
+						type="text"
+						id="location"
+						name="location"
+						value="{{ spare.location or '' }}"
+						placeholder="e.g., Shelf A-3" />
+				</div>
+			</div>
+
+			<div class="btn-group">
+				<button
+					type="submit"
+					class="btn">
+					Save Changes
+				</button>
+				<a
+					href="{{ url_for('spares.list_spares') }}"
+					class="btn btn-secondary"
+					>Cancel</a
+				>
+			</div>
+		</form>
+	</div>
+</div>
+{% endblock %}

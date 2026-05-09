@@ -1,0 +1,107 @@
+{% extends "base.html" %} {% block title %}Add Spare - Spare Manager{% endblock
+%} {% block content %}
+<div
+	class="card"
+	style="max-width: 600px; margin: 0 auto">
+	<div class="card-header">
+		<h1>Add New Spare</h1>
+	</div>
+
+	<div class="card-body">
+		<form method="POST">
+			<div class="form-group">
+				<label for="name">Spare Name *</label>
+				<input
+					type="text"
+					id="name"
+					name="name"
+					required />
+			</div>
+
+			<div class="form-group">
+				<label for="description">Description</label>
+				<textarea
+					id="description"
+					name="description"></textarea>
+			</div>
+
+			<div class="form-group">
+				<label for="part_number">Part Number</label>
+				<input
+					type="text"
+					id="part_number"
+					name="part_number" />
+			</div>
+
+			<div class="form-group">
+				<label for="item_type">Item Type *</label>
+				<select
+					id="item_type"
+					name="item_type"
+					required>
+					<option value="">Select Type</option>
+					<option value="reusable">Reusable (Must be returned)</option>
+					<option value="consumable">Consumable (May be returned)</option>
+				</select>
+			</div>
+
+			<div class="grid-2">
+				<div class="form-group">
+					<label for="quantity_in_stock">Initial Quantity *</label>
+					<input
+						type="number"
+						id="quantity_in_stock"
+						name="quantity_in_stock"
+						value="0"
+						required
+						min="0" />
+				</div>
+
+				<div class="form-group">
+					<label for="minimum_quantity">Minimum Level *</label>
+					<input
+						type="number"
+						id="minimum_quantity"
+						name="minimum_quantity"
+						value="1"
+						required
+						min="1" />
+				</div>
+			</div>
+
+			<div class="grid-2">
+				<div class="form-group">
+					<label for="unit">Unit (pcs, box, set, etc.)</label>
+					<input
+						type="text"
+						id="unit"
+						name="unit"
+						placeholder="e.g., pcs" />
+				</div>
+
+				<div class="form-group">
+					<label for="location">Storage Location</label>
+					<input
+						type="text"
+						id="location"
+						name="location"
+						placeholder="e.g., Shelf A-3" />
+				</div>
+			</div>
+
+			<div class="btn-group">
+				<button
+					type="submit"
+					class="btn">
+					Create Spare
+				</button>
+				<a
+					href="{{ url_for('spares.list_spares') }}"
+					class="btn btn-secondary"
+					>Cancel</a
+				>
+			</div>
+		</form>
+	</div>
+</div>
+{% endblock %}

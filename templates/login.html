@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0" />
+		<title>Login - Spare Manager</title>
+		<link
+			rel="stylesheet"
+			href="{{ url_for('static', filename='css/style.css') }}" />
+		<style>
+			.login-container {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				min-height: 100vh;
+			}
+			.login-card {
+				background-color: var(--bg-secondary);
+				border: 1px solid var(--border);
+				border-radius: 8px;
+				padding: 2rem;
+				width: 100%;
+				max-width: 400px;
+			}
+			.login-card h1 {
+				text-align: center;
+				margin-bottom: 2rem;
+				color: var(--accent);
+			}
+		</style>
+	</head>
+	<body>
+		<div class="login-container">
+			<div class="login-card">
+				<h1>⚙️ Spare Manager</h1>
+
+				{% with messages = get_flashed_messages(with_categories=true) %} {% if
+				messages %} {% for category, message in messages %}
+				<div class="alert alert-{{ category }}">{{ message }}</div>
+				{% endfor %} {% endif %} {% endwith %}
+
+				<form method="POST">
+					<div class="form-group">
+						<label for="username">Username</label>
+						<input
+							type="text"
+							id="username"
+							name="username"
+							required
+							autofocus />
+					</div>
+					<div class="form-group">
+						<label for="password">Password</label>
+						<input
+							type="password"
+							id="password"
+							name="password"
+							required />
+					</div>
+					<button
+						type="submit"
+						class="btn"
+						style="width: 100%">
+						Login
+					</button>
+				</form>
+
+				<p
+					class="text-center text-muted mt-3"
+					style="font-size: 0.9rem">
+					Default credentials: admin / admin123
+				</p>
+			</div>
+		</div>
+	</body>
+</html>
