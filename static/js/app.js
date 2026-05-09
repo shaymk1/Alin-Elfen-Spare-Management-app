@@ -16,11 +16,26 @@ function initializeUI() {
     // Initialize tooltips if any
     initializeTooltips();
 
-    // Add form validation
-    initializeFormValidation();
-}
+function initializeFormValidation() {
+    // Add enter key support for search
+    const searchInput = document.getElementById('search');
+    if (searchInput) {
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                this.closest('form').submit();
+            }
+        });
+    }
 
-function initializeTooltips() {
+    // Add clear search functionality
+    const clearLinks = document.querySelectorAll('a[href*="spares.list_spares"]');
+    clearLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            // Could add loading indicator here
+        });
+    });
+}
     const tooltips = document.querySelectorAll('[data-tooltip]');
     tooltips.forEach(element => {
         element.addEventListener('mouseenter', showTooltip);

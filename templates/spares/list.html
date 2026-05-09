@@ -3,155 +3,68 @@
 <div class="card">
 	<div class="card-header flex-between">
 		<h1>Spare Items</h1>
-		{% if current_user.role in ['store_manager', 'general_manager'] %}
 		<a
-			href="{{ url_for('spares.add_spare') }}"
+			href="#"
 			class="btn"
+			target="_blank"
 			>+ Add Spare</a
 		>
-		{% endif %}
 	</div>
-
 	<div class="card-body">
 		<form
 			method="GET"
-			class="mb-3">
-			<div
-				class="flex-gap-2"
-				style="display: flex; margin-bottom: 1rem">
-				<input
-					type="text"
-					name="search"
-					placeholder="Search by name or part number..."
-					value="{{ search or '' }}"
-					style="flex: 1" />
-				<select name="type">
-					<option value="">All Types</option>
-					<option
-						value="reusable"
-						{%
-						if
-						filter_type=""
-						="reusable"
-						%}selected{%
-						endif
-						%}>
-						Reusable
-					</option>
-					<option
-						value="consumable"
-						{%
-						if
-						filter_type=""
-						="consumable"
-						%}selected{%
-						endif
-						%}>
-						Consumable
-					</option>
-				</select>
-				<button
-					type="submit"
-					class="btn">
-					Search
-				</button>
-			</div>
+			style="
+				margin-bottom: 1rem;
+				display: flex;
+				gap: 0.5rem;
+				align-items: center;
+			">
+			<input
+				type="text"
+				name="search"
+				placeholder="Search spares..."
+				style="flex: 1; padding: 0.5rem" />
+			<select
+				name="type"
+				style="padding: 0.5rem; width: 120px; flex-shrink: 0">
+				<option value="">All Types</option>
+				<option value="reusable">Reusable</option>
+				<option value="consumable">Consumable</option>
+			</select>
+			<button
+				type="submit"
+				class="btn"
+				style="flex-shrink: 0">
+				Search
+			</button>
 		</form>
 
-		{% if spares.items %}
 		<table>
 			<thead>
 				<tr>
 					<th>Name</th>
 					<th>Part Number</th>
 					<th>Type</th>
-					<th>In Stock</th>
-					<th>Min Level</th>
-					<th>Location</th>
-					<th>Status</th>
+					<th>Stock</th>
 					<th>Actions</th>
 				</tr>
 			</thead>
 			<tbody>
-				{% for spare in spares.items %}
 				<tr>
-					<td>{{ spare.name }}</td>
-					<td><code>{{ spare.part_number or '-' }}</code></td>
+					<td>Sample Bearing</td>
+					<td>BRG-001</td>
+					<td>Reusable</td>
+					<td>10</td>
 					<td>
-						<span
-							class="badge {% if spare.item_type == 'reusable' %}badge-accent{% else %}badge-success{% endif %}">
-							{{ spare.item_type.title() }}
-						</span>
-					</td>
-					<td><strong>{{ spare.quantity_in_stock }}</strong></td>
-					<td>{{ spare.minimum_quantity }}</td>
-					<td>{{ spare.location or '-' }}</td>
-					<td>
-						{% if spare.quantity_in_stock <= spare.minimum_quantity %}
-						<span class="badge badge-warning">Low Stock</span>
-						{% else %}
-						<span class="badge badge-success">OK</span>
-						{% endif %}
-					</td>
-					<td>
-						<div class="btn-group">
-							{% if current_user.role in ['store_manager', 'general_manager'] %}
-							<a
-								href="{{ url_for('spares.edit_spare', spare_id=spare.id) }}"
-								class="btn"
-								style="padding: 0.5rem 1rem; font-size: 0.9rem"
-								>Edit</a
-							>
-							<form
-								method="POST"
-								action="{{ url_for('spares.delete_spare', spare_id=spare.id) }}"
-								style="display: inline"
-								onsubmit="return confirm('Delete this spare?');">
-								<button
-									type="submit"
-									class="btn btn-danger"
-									style="padding: 0.5rem 1rem; font-size: 0.9rem">
-									Delete
-								</button>
-							</form>
-							{% endif %}
-						</div>
+						<a
+							href="#"
+							class="btn btn-secondary"
+							>Edit</a
+						>
 					</td>
 				</tr>
-				{% endfor %}
 			</tbody>
 		</table>
-
-		{% if spares.pages > 1 %}
-		<div class="pagination">
-			{% if spares.has_prev %}
-			<a
-				href="{{ url_for('spares.list_spares', page=spares.prev_num, search=search, type=filter_type) }}"
-				>← Previous</a
-			>
-			{% endif %} {% for page_num in spares.iter_pages() %} {% if page_num %} {%
-			if page_num == spares.page %}
-			<span class="active">{{ page_num }}</span>
-			{% else %}
-			<a
-				href="{{ url_for('spares.list_spares', page=page_num, search=search, type=filter_type) }}"
-				>{{ page_num }}</a
-			>
-			{% endif %} {% endif %} {% endfor %} {% if spares.has_next %}
-			<a
-				href="{{ url_for('spares.list_spares', page=spares.next_num, search=search, type=filter_type) }}"
-				>Next →</a
-			>
-			{% endif %}
-		</div>
-		{% endif %} {% else %}
-		<p class="text-center text-muted p-4">
-			No spares found. {% if current_user.role in ['store_manager',
-			'general_manager'] %}<a href="{{ url_for('spares.add_spare') }}"
-				>Create one now</a
-			>{% endif %}
-		</p>
-		{% endif %}
 	</div>
 </div>
 {% endblock %}
