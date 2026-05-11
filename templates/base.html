@@ -17,34 +17,45 @@
                 <li><a href="{{ url_for('spares.list_spares') }}" {% if 'spares' in request.endpoint %}class="active"{% endif %}>Spares</a></li>
                 <li><a href="{{ url_for('borrow.list_borrows') }}" {% if 'borrow' in request.endpoint %}class="active"{% endif %}>Borrow</a></li>
                 <li><a href="{{ url_for('return.list_returns') }}" {% if 'return' in request.endpoint %}class="active"{% endif %}>Return</a></li>
-                {% if current_user.role in ['admin', 'general_manager'] %}
-                <li><a href="{{ url_for('reports.audit_log_view') }}" {% if 'reports' in request.endpoint %}class="active"{% endif %}>Reports</a></li>
-                {% endif %}
-                {% if current_user.role == 'admin' %}
-                <li><a href="{{ url_for('settings.settings') }}" {% if 'settings' in request.endpoint %}class="active"{% endif %}>Settings</a></li>
-                {% endif %}
             </ul>
             <div class="user-menu">
-                <span>{{ current_user.username }} ({{ current_user.role.replace('_', ' ').title() }})</span>
-                <a href="{{ url_for('auth.logout') }}" class="btn btn-secondary">Logout</a>
+                <a href="{{ url_for('auth.logout') }}" class="btn btn-logout">Logout</a>
             </div>
         </div>
     </nav>
-    {% endif %}
 
-    <main class="container">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                <div class="alert alert-{{ category }}">
-                    {{ message }}
-                </div>
-                {% endfor %}
+    <!-- Side Panel -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h3>Menu</h3>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="#" class="sidebar-link">📊 History</a></li>
+            <li><a href="{{ url_for('reports.audit_log_view') }}" class="sidebar-link {% if 'reports' in request.endpoint %}active{% endif %}">📋 Reports</a></li>
+            {% if current_user.role == 'admin' %}
+            <li><a href="{{ url_for('settings.settings') }}" class="sidebar-link {% if 'settings' in request.endpoint %}active{% endif %}">⚙️ Settings</a></li>
+            <li><a href="#" class="sidebar-link">👤 Admin</a></li>
             {% endif %}
-        {% endwith %}
+            <li><a href="#" class="sidebar-link">🔔 Alerts</a></li>
+        </ul>
+    </aside>
 
-        {% block content %}{% endblock %}
+    <main class="main-content">
+        <div class="container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </div>
     </main>
+    {% endif %}
 
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
     {% block extra_js %}{% endblock %}

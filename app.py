@@ -287,12 +287,25 @@ def logout():
 
 @app.route("/", endpoint="main.dashboard")
 def dashboard():
+    today = datetime.now().date()
+    today_start = datetime.combine(today, datetime.min.time())
+    today_end = datetime.combine(today, datetime.max.time())
+
+    today_movements = sum(
+        1 for borrow in borrow_records if today_start <= borrow.borrowed_at <= today_end
+    ) + sum(
+        1
+        for return_record in return_records
+        if today_start <= return_record.returned_at <= today_end
+    )
+
     stats = {
         "total_spares": len(spares),
         "low_stock": sum(
             1 for spare in spares if spare.quantity_in_stock <= spare.minimum_quantity
         ),
         "active_borrows": sum(1 for borrow in borrow_records if not borrow.is_returned),
+        "today_movements": today_movements,
     }
     return render_template("dashboard.html", stats=stats)
 

@@ -6,10 +6,10 @@
 		<p class="text-muted">Welcome back, {{ current_user.username }}!</p>
 	</div>
 	<div class="card-body">
-		<div class="grid-4">
+		<div class="grid-2">
 			<div class="stat-card">
-				<div class="value">{{ stats.total_spares }}</div>
-				<div class="label">Total Spares</div>
+				<div class="value">{{ stats.active_borrows }}</div>
+				<div class="label">Active Borrows</div>
 			</div>
 			<div class="stat-card">
 				<div
@@ -19,19 +19,19 @@
 				</div>
 				<div class="label">Low Stock Items</div>
 			</div>
+		</div>
+		<div class="grid-2">
 			<div class="stat-card">
 				<div
 					class="value"
 					style="color: var(--success)">
-					{{ stats.active_borrows }}
+					{{ stats.total_spares }}
 				</div>
-				<div class="label">Active Borrows</div>
+				<div class="label">Total Items</div>
 			</div>
 			<div class="stat-card">
-				<div class="value">
-					{{ current_user.role.replace('_', ' ').title() }}
-				</div>
-				<div class="label">Your Role</div>
+				<div class="value">{{ stats.today_movements }}</div>
+				<div class="label">Today's Movements</div>
 			</div>
 		</div>
 
